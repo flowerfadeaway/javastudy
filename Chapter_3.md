@@ -225,3 +225,228 @@ int nx=(int) Math.round(x);
 * `|`位或
 * `^`位异或
 * `~`位非
+* `>>;<<`右移或左移
+* `>>>`会用0填充高位，与上面的运算符不同。
+
+
+```java7
+int n=0b101010;
+int fourthBitFromRight=(n & 0b1000)/0b1000;
+```
+
+其中的二进制除法经过测试，应该类似二进制的移位操作。（具体有待查询）
+
+### 括号与预算符级别
+
+注意：像`+=`这样的运算符都是右结合运算符。
+
+### 枚举类型
+
+自定义枚举类型`enum Size { SMALL,MEDIUM,LARGE,EXTRA_LARGE};`，然后可以声明这种类型的变量`Size s=Size.MeDIUM`。Size类型的变量
+只能存储这个类型声明中给定的某个枚举值，或者null值，null值表示这个变量没有设置任何值。
+
+## 字符串
+
+java中没有内置的字符串类型，在标准java类库中，提供类一个预定义类，叫`String`。每个用双引号括起来的字符串都是String类的一个实例。
+
+### 子串
+
+`String.substring`方法，用法和python的截取子串一样。
+
+### 拼接
+
+* 可以使用`+`拼接，比python的优点是对于非字符串可以进行自动转换成字符串。
+* 多个字符串放在一起，用一个定界符分割，可以使用静态方法`join`方法：`String all=String.join("/","S","M","L","XL");`
+
+### 不可变字符串
+
+String类对象是不可变字符串（同python）
+
+### 检测字符串是否相等
+
+* `s.equals(t)`
+* `s.equalslgnoreCase(t)`不区分大小写，检测两个字符串是否相等
+
+注意：一定不要使用`==`检测字符串是否相等，这个运算符只能够确定两个字符串是否放置在同一个位置上。类似于python的检测id。
+
+### 空串与Null串
+
+其实和python类似，不过多介绍。
+
+### 码点和代码单元
+
+待续
+
+### String API
+
+一些API的介绍，以后可以慢慢添加。
+
+### 构建字符串
+
+避免多个字符串都要声明的麻烦现象，可以使用StringBuilder类，首先，构建一个空的字符串构建器：`StringBuilder builder=new StringBuilder();`，当每次需要添加一部分内容时，就调用append方法。
+
+```java7
+builder.append(ch);
+builder.append(str);
+```
+
+在需要构建字符串时候，就调用`toString`方法，将可以得到一个String对象，其中包含了构建器中的字符序列。
+
+```java7
+String completedString=builder.toString();
+```
+
+## 输入输出
+
+### 读取输入
+
+首先构造一个Scanner对象，并与标准输入流System.in关联。`Scanner in = new Scanner(System.in);`，然后就可以使用Scanner类的各种方法实现输入操作了。例如，NextLine方法将输入一行。
+
+```java7
+System.out.print("what is your name? ");
+String name = in.NextLine();
+```
+
+使用nextLine方法是因为在输入行中有可能包含空格。要想读取一个单词（以空白符作为分隔符），就调用`String firstname=in.next();`
+
+要想读取一个整数，就调用nextInt方法。要想读取浮点数，就调用nextDouble方法。
+
+最后，要在程序的最开始添加一行：`import java.util.*`。Scanner类定义在java.util包中。当使用的类不是定义在基本的java.lang包中，一定要使用import将包加载进来。
+
+因为输入可见，Scanner类不适合读取密码，java SE 6提供了Console类来实现这个目的。（以后详细介绍）
+
+### 格式化输出
+
+格式化输出`printf`，有一个很有意思的事情，例子：`System.out.printf("%8.2f",x);`可以用8个字符的宽度和小数点后两个字符的精度打印x。也就是说，打印输出一个空格和7个字符串，这里我个人猜测，java字符串结尾是以空格结尾的，所以才有这种说法。
+
+用于printf的转换符。
+
+![fig](./picture/C3/3.jpg)
+
+用于printf的标志
+
+![fig](./picture/C3/4.jpg)
+
+可以使用静态的String.format方法创建一个格式化的字符串，而不打印输出。
+
+`String message=String.format("Hello,%s,Next year,you'll be %d",name,age);`
+
+还有一些关于时间的专门格式输出。
+
+### 文件输入与输出
+
+待续
+
+## 控制流程
+
+### 块作用域
+
+块是指由一对大括号括起来的若干条简单的java语句。块确定了变量的作用域。一个快可以嵌套在另一个块中。但是，不能在嵌套的两个块中声明同名的变量。
+
+### 条件语句
+
+* 格式：`if (condition) statement`，这里的条件必须用括号括起来。
+* `if (condition) statement else statement`
+* `if (condition) statement else if (condition) statement else statement`
+
+### 循环
+
+* 格式：`while (condition) statement`
+* `do statement while (condition);`
+
+### 确定循环
+
+格式举例：`for (int i=1;i<=10;i++)`
+
+### switch语句
+
+格式举例
+
+```java7
+Scanner in =new Scanner(System.in);
+System.out.print("Select an option (1,2,3,4)");
+int choice=in.nextInt();
+switch (choice)
+{
+  case 1:
+    ...
+    break;
+  case 2:
+    ...
+    break;
+  case 3:
+    ...
+    break;
+  case 4:
+    ...
+    break;
+  default:
+    ...
+    break;
+}
+```
+
+我个人不喜欢使用switch语句
+
+### break,continue
+
+基本和python一样
+
+### 大数值
+
+待续
+
+## 数组
+
+用来存储同一类型值的集合。可以通过下标访问数组元素。在声明数组变量的时候，需要指出数组类型（数组元素类型紧跟[]）和数组变量的名字。如：`int[] a;`
+
+不过，这条语句只声明了变量a，并没有将a初始化一个真正的数组。应该使用new运算符创建数组（这里我可以猜测，new用于实例化对象），如：`int[] a=new int [100];`
+
+这条语句创建了一个可以存储100个整数的数组。初始化默认数值和python基本一样，除了字符串类型不同，因为在java中字符串是对象，对于对象初始化是null。
+
+一旦创建了数组，就不能改变其大小了。
+
+### for each 循环
+
+格式：`for (variable : collection) statement`
+
+### 数组初始化以及匿名数组
+
+格式例子：`int[] ss={2,3,5,7};`，请注意，在使用这种语句的时候，不需要调用new。甚至还可以初始化一个匿名的数组：`new int[] {1,2,3,4};`，这种表示法将创建一个新数组并利用括号中的数值初始化，数组的大小就是初始值的个数。使用这种语法形式可以在不创建新变量的情况下重新初始化一个数组。例如：`ss=new int[] {1,2,3,4};`，这是语句的简写形式：`int[] a={1,2,3,4};ss=a;`
+
+### 数组拷贝
+
+在java中，允许将一个数组变量拷贝给另一个数组变量。这时候，两个变量将引用同一个数组，就是python中的浅拷贝，要想得到深拷贝，就要使用Arrays类的copyOf方法：`int[] copya=Arrays.copyOf(a,a.length);`，第二个参数是新数组的长度。这个方法通常用来增加数组的大小。多余的位置将默认初始值。如果长度小于原始数组的长度，则只拷贝最前面的数据元素。
+
+### 命令行参数
+
+每一个java应用程序都有一个带String arg[]参数的main方法。这个参数表明main方法将接受一个字符串数组，也就是命令行参数。
+
+![fig](./picture/C3/5.jpg)
+
+### 数组排序
+
+举个例子
+
+```java7
+int[] a=new int[1000];
+Arrays.sort(a);
+```
+
+这个方法使用的是快排。
+
+### 多维数组
+
+声明一个二维数组格式：`double[][] bb;`，与一维数组一样，在调用new对多维数组进行初始化之前不能使用它`bb=new double[x][y]`，如果知道数组的元素，就可以不调用new，而直接使用简化的书写形式对多维数组进行初始化。例如：
+
+```java7
+int[][] magicSquare=
+  {
+    {1,2,3,4},
+    {5,6,7,8}
+  };
+```
+
+### 不规则数组
+
+以后具体介绍
