@@ -58,5 +58,265 @@
 不要使用构造器来构造LocalDate类的对象。实际上，应当使用静态工厂方法（factory method）代表你调用构造器（<font col='red'>具体为什么不能用new呢？</font>）。下面的表达式
 
 ```java7
-LocalDate.now()
+LocalDate.now();
 ```
+
+会构造一个新对象，表示构造这个对象时的日期。也可以提供年，月，日来构造对应一个特定日期的对象：
+
+```java7
+LocalDate newYearEve = LocalDate.of(1999,12,31);
+```
+
+一旦有了一个LocalDate对象，可以用方法`getYear,getMonthValue,getDayOfMonth`得到年，月，日。当需要加一些日子，可用`plusDays`得到一个新的LocalDate。
+
+### 更改器方法与访问器方法
+
+* 如果一个方法是更改器方法，那么对象在调用这个方法后，对象的状态会发送改变，那么就称这个方法为更改器方法。
+* 相反，只访问对象而不修改对象的方法有时称为访问器方法。
+
+## 用户自定义类
+
+我们之前已经写过自己的类了，不过比较简单，只包含一个main方法。现在开始学习如何设计复杂应用程序所需要的各种主力类（workhorse class）。通常，这些类没有main方法，却有自己的实例域和实例方法。要想创建一个完整的程序，应该将若干类组合在一起，其中只有一个类有main方法。
+
+在java中，最简单的类定义形式为：
+
+```java7
+class ClassName
+{
+  field1
+  field2
+  ...
+  constructor1
+  constructor2
+  ...
+  method1
+  method2
+  ...
+}
+```
+
+下面给出一个非常简单的Employee类。
+
+```java7
+class Employee
+{
+  // instance fields
+  private String name;
+  private double salary;
+  private LocalDate hireDay;
+
+  // constructor
+  public Employee(String n,double s,int year,int month,int day)
+  {
+    name=n;
+    salary=s;
+    hireDay=LocalDate.of(year,month,day);
+  }
+
+  // a method
+  public String getName()
+  {
+    return name;
+  }
+
+  // more methods
+  ...
+}
+```
+
+### 剖析Employee类
+
+这个类包含类一个构造器和1个方法，这个类的方法被标记为public。关键字public意味着任何类的任何方法都可以调用这个方法。接下来，在Employee类的实例中有三个实例域用来存储将要操作的数据。关键字private确保只有Emplyee类自身的方法能够访问这些实例域，而其他类的方法不能读写这些域。
+
+### 从构造器开始
+
+可以看到，构造器与类同名。在构造Emplyee类的对象时，构造器会运行，以便将实例域初始化为所希望的状态。使用如下代码创建实例：
+
+```java7
+new Emplyee("James Bond",100000,1950,1,1);
+```
+
+构造器与其他的方法有一个重要的不同。构造器总是伴随着new操作符的执行被调用，而不能对一个已经存在的对象调用构造器来达到重新设置实例域的目的。
+
+这里列出构造器的性质：
+
+* 构造器与类同名
+* 每个类可以有一个以上的构造器
+* 构造器可以有0个，1个或多个参数
+* 构造器没有返回值
+* 构造器总是伴随着new操作一起调用
+
+注意，不要在构造器中定义与实例域重名的局部变量，如这样：
+
+```java7
+class Employee
+{
+  // instance fields
+  private String name;
+  private double salary;
+  private LocalDate hireDay;
+
+  // constructor
+  public Employee(String n,double s,int year,int month,int day)
+  {
+    String name=n; //Error
+    double salary=s; //Error
+    hireDay=LocalDate.of(year,month,day);
+  }
+
+  ...
+}
+```
+
+这个构造器声明类局部变量name和salary，这些变量只能在构造器内部访问。这些变量屏蔽类同名的实例域。
+
+
+### 隐式参数与显示参数
+
+方法用于操作对象以及存取它们的实例域。例如，方法：
+
+```java7
+public void raiseSalary(double byPercent)
+{
+  double raise=salary+byPercent/100;
+  salary+=raise;
+}
+```
+
+<font color='red'>在这个方法中，声明了raise局部变量（应该只存在这个块作用域中）</font>
+
+将调用这个方法的对象的salary实例域设置为新值。`raiseSalary`方法有两个参数，第一个参数为隐式参数，是出现在方法名前的Employee类对象。第二个参数位于方法名后面括号中的数值，这是一个显示参数。
+
+可以看到，显示参数是明显地列在方法声明中的，例如`double byPercent`。隐式参数没有出现在方法声明中。
+
+在每个方法中，关键字`this`表示隐式参数。如果需要的话，可以用下列方式编写`raiseSalary`方法：
+
+```java7
+public void raiseSalary(double byPercent)
+{
+  double raise = this.salary*byPercent/100;
+  this.salary+=raise;
+}
+```
+
+有些程序员更偏爱这样的风格，因为这样可以将实例域与局部变量明显地区分开来。`this`这种表示法应该是表示实例域的。
+
+### 封装的优点
+
+最后，我们仔细看一下非常简单的`getName`方法
+
+```java7
+public String getName()
+{
+  return name;
+}
+```
+
+这些都是典型的访问器方法。由于它们只返回实例域值，因此又称为域访问器。
+
+### 基于类的访问权限
+
+从前面已经知道，方法可以访问所调用对象的私有数据。其实，一个方法可以访问所属类的所有对象的私有数据。举个例子
+
+```java7
+class Employee
+{
+  ...
+  public boolean equals(Emplyee other)
+  {
+    return name.equals(other.name);
+  }
+}
+```
+
+典型的调用方式是
+
+```java7
+if (harry.equals(boss)) ...
+```
+
+这个方法访问类harry的私有域，而且也访问了boss的私有域。原因就是boss也是Employee类对象，而Employee类的方法可以访问Emplyee类的任何一个对象的私有域。
+
+### final实例域
+
+可以将实例域定义为final。构建对象时必须初始化这样的域。也就是说，必须确保在每一个构造器执行之后，这个域的值被设置，并且在后面的操作中，不能够再对它进行修改。例如，可以将Emplyee类的name域声明为final，因为在对象构建之后，这个值不会再被修改，即没有setName方法。
+
+`private final String name;`
+
+## 静态域与静态方法
+
+说一下static这个修饰符的含义。
+
+### 静态域
+
+如果将域定义为static，每个类中只有一个这样的域。而每一个对象对于所有的实例域却都有自己的一份拷贝。例如，假定需要给每一个雇员赋予唯一的标识码。这里给Employee类添加一个实例域id和一个静态域nextId：
+
+```java7
+class Employee
+{
+  private static int nextId=1;
+  private int id;
+  ...
+}
+```
+
+现在，每一个雇员对象都有一个自己的id域，但这个类的所有实例将共享一个nextId域。换句话说，如果有1000个Employee类的对象，则有1000个实例域id。但是，只有一个静态域nextId。即使没有一个雇员对象，静态域nextId也存在。它属于类，而不属于任何独立的对象。
+
+<font color='red'>这里我感觉静态域就像python的类变量，属于类的，调用使用的时候，也需要类名加.调用，而实例域就类似对象（实例）变量。</font>
+
+### 静态常量
+
+跟静态域差不多，只不过是个常量
+
+### 静态方法
+
+静态方法是一种不能向对象实施操作的方法。例如，Math类的pow方法就是一个静态方法。表达式
+
+```java7
+Math.pow(x,a)
+```
+
+在运算时候，不使用任何Math对象。换句话说，没有隐式的参数。
+
+Employee类的静态方法不能访问Id实例域，因为它不能操作对象。但是，静态方法可以访问自身类中的静态域。例如
+
+```java7
+public static int getNextId()
+{
+  return nextId;
+}
+int n = Employee.getNextId();
+```
+
+这个方法可以省略关键字static，但是，需要通过Emplyee类对象的引用调用这个方法。
+
+
+### 工厂方法
+
+静态方法还有另外一种常见的用途。类似LocalDate和NumberFormat的类使用静态工厂方法来构造对象。为什么NumberFormat类不利用构造器完成这些操作呢？主要有两个原因：
+
+* 无法命名构造器。构造器的名字必须与类名相同。但是，这里希望得到的货币实例和百分比实例采用不同的名字
+* 当使用构造器的时候，无法改变所构造的对象类型。而工厂方法将返回一个DecimalFormat类对象，这是NumberFormat的子类。
+
+### main方法
+
+main方法也是一个静态方法。main方法不对任何对象进行操作。事实上，在启动程序时候，还没有任何一个对象。静态的main方法将执行并创建程序所需要的对象。
+
+## 方法参数
+
+在将参数传递给方法（或函数）的过程中
+
+* 按值调用，表示方法接受的是调用者提供的值
+* 按引用调用，表示方法接收的是调用者提供的变量地址
+
+一个方法可以修改传递引用所对应的变量值，而不能修改传递值调用所对应的变量值。
+
+java程序设计语言总是采用按值调用。也就是说，方法得到的是所有参数值的一个拷贝，特别是，方法不能修改传递给它的任何参数变量的内容。
+
+有关值传递还是引用传递，这里的说法还是很清楚的， [点击前往](https://www.zhihu.com/question/31203609)
+
+## 对象构造
+
+前面已经学习类编写简单的构造器，可以定义对象的初始状态。但是，由于对象构造非常重要，所以java提供类多种编写构造器的机制。
+
+### 重载
